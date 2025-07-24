@@ -1,0 +1,25 @@
+# SAT-API
+SAT-API/var/
+SAT-API/vendor/
+SAT-API/.env
+SAT-API/.env.dev
+SAT-API/.env.local
+SAT-API/.env.*.local
+SAT-API/.env.test
+SAT-API/.env.test.local
+SAT-API/.env.dev.local
+SAT-API/.env.prod.local
+SAT-API/config/secrets/prod/prod.decrypt.private.php
+SAT-API/public/bundles/
+
+# Logs & cache
+*.log
+*.cache
+
+# IDEs e sistemas operacionais
+.DS_Store
+.idea/
+.vscode/
+
+# Docker volumes (opcional, dependendo do setup)
+docker/db-data/
