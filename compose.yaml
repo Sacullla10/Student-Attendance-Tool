@@ -1,0 +1,40 @@
+services:
+  sat-web:
+    build:
+      context: ./SAT-WebApp
+      dockerfile: dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./SAT-WebApp/jsconfig.json:/app/jsconfig.json:ro # Montando configs do vite
+      - ./SAT-WebApp/vite.config.js:/app/vite.config.js:ro
+      - ./SAT-WebApp/index.html:/app/index.html:ro # Montando index.html
+      - ./SAT-WebApp/src:/app/src # Montando src
+      - ./SAT-WebApp/public:/app/public # Montando public
+      - ./SAT-WebApp/package.json:/app/package.json # Montando packages do node
+      - ./SAT-WebApp/package-lock.json:/app/package-lock.json
+    command: sh -c "npm install && npm run dev -- --host"
+  sat-api:
+    build:
+      context: ./SAT-API
+      dockerfile: dockerfile
+    ports:
+      - "8000:8000" # Porta do PHP
+    volumes:
+      - ./SAT-API:/app # Montando o diretório do API
+      - ./SAT-API/.env:/app/.env:ro # Montando o arquivo de ambiente
+    command: sh -c "composer install && php -S 0.0.0.0:8000 -t public"
+    depends_on:
+      - sat-db
+  sat-db:
+    image: mysql:latest
+    volumes:
+      - ./sat_db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sat_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306" # Porta do MySQL
+

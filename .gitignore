@@ -12,6 +12,9 @@ SAT-API/.env.prod.local
 SAT-API/config/secrets/prod/prod.decrypt.private.php
 SAT-API/public/bundles/
 
+# SAT-DB
+sat_db_data
+
 # Logs & cache
 *.log
 *.cache
