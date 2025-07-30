@@ -1,7 +1,6 @@
 # SAT-API
 SAT-API/var/
 SAT-API/vendor/
-SAT-API/.env
 SAT-API/.env.dev
 SAT-API/.env.local
 SAT-API/.env.*.local

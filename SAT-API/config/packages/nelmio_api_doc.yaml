@@ -1,0 +1,8 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Student Attendance Tracker API
+            description: This API allows you to manage student attendance records.
+            version: 1.0.0
+    areas:
+        path_patterns: [ ^/api ] # Mostra só rotas que começam com /api
