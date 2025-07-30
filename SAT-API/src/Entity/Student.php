@@ -21,7 +21,7 @@ class Student
     /**
      * @var Collection<int, Attendance>
      */
-    #[ORM\OneToMany(targetEntity: Attendance::class, mappedBy: 'student_id', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Attendance::class, mappedBy: 'student', orphanRemoval: true)]
     private Collection $attendances;
 
     public function __construct()

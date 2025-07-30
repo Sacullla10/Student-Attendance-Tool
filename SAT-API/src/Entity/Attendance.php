@@ -14,7 +14,7 @@ class Attendance
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'attendances')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'student_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     private ?Student $student = null;
 
     #[ORM\ManyToOne]
