@@ -13,6 +13,7 @@ services:
       - ./SAT-WebApp/public:/app/public # Montando public
       - ./SAT-WebApp/package.json:/app/package.json # Montando packages do node
       - ./SAT-WebApp/package-lock.json:/app/package-lock.json
+      - ./SAT-WebApp/.env:/app/.env
     command: sh -c "npm install && npm run dev -- --host"
   sat-api:
     build:
