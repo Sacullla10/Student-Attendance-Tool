@@ -6,9 +6,9 @@ services:
     ports:
       - "5173:5173"
     volumes:
-      - ./SAT-WebApp/jsconfig.json:/app/jsconfig.json:ro # Montando configs do vite
-      - ./SAT-WebApp/vite.config.js:/app/vite.config.js:ro
-      - ./SAT-WebApp/index.html:/app/index.html:ro # Montando index.html
+      - ./SAT-WebApp/jsconfig.json:/app/jsconfig.json # Montando configs do vite
+      - ./SAT-WebApp/vite.config.js:/app/vite.config.js
+      - ./SAT-WebApp/index.html:/app/index.html # Montando index.html
       - ./SAT-WebApp/src:/app/src # Montando src
       - ./SAT-WebApp/public:/app/public # Montando public
       - ./SAT-WebApp/package.json:/app/package.json # Montando packages do node
