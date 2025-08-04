@@ -1,148 +1,123 @@
-# Student-Attendance-Tool
-This project is a challenge task to create a simple web application to register the student attendance to different classes.
+# Student Attendance Tool (SAT)
 
+Este projeto é uma aplicação web fullstack para controle de presença de alunos, construída com:
 
+- **Back-end**: Symfony 6 (API Platform) (em desenvolvimento)
+- **Front-end**: Vue.js 3 (em desenvolvimento)
+- **Banco de Dados**: PostgreSQL (via Docker)
+- **Ambiente de Desenvolvimento**: Docker + Docker Compose
+
+---
+
+## 📦 Pré-requisitos
+
+Antes de começar, instale:
+
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+
+---
+
+## 🚀 Subindo o Projeto com Docker Compose
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/Sacullla10/Student-Attendance-Tool.git
+cd student-attendance-tool
+```
+
+### 2. Suba os containers com Docker Compose
+
+```bash
+docker-compose up -d --build
+```
+
+> Isso irá subir:
+> - O container do backend (Symfony API)
+> - O container do banco PostgreSQL
+
+### 3. Acesse o container do Symfony (backend)
+
+```bash
+docker exec -it sat-api bash
+```
+
+### 4. Instale as dependências e configure o banco
+
+Dentro do container do Symfony, execute:
+
+```bash
 composer install
 php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
-
-docker build -t sat-api .
-docker run -p 8000:8000 sat-api
-
-# Student Attendance Tool (SAT)
-
-This repository contains a fullstack application designed to manage student attendance, built with:
-
-- **Back-end**: Symfony 6 (API Platform)
-- **Front-end**: Vue.js 3 (to be added)
-- **Database**: PostgreSQL (via Docker)
-- **Dev environment**: Docker
-
----
-
-## 🐳 Getting Started with Docker
-
-### Prerequisites
-
-- [Docker](https://www.docker.com/) installed on your machine.
-- [Docker Compose](https://docs.docker.com/compose/) (optional, to be added soon).
-
----
-
-### 🧱 Backend (SAT-API) - Docker Setup
-
-```bash
-# 1. Go to the SAT-API folder
-cd SAT-API
-
-# 2. Build the Docker image
-docker build -t sat-api .
-
-# 3. Run the container
-docker run -it --rm -p 8001:8000 sat-api
+php bin/console doctrine:fixtures:load
 ```
 
-> ℹ️ You can now access the API at: [http://localhost:8001](http://localhost:8001)
+> Essas instruções vão criar o banco, aplicar as migrations e popular com dados de exemplo.
 
 ---
 
-## 🧪 API Health Check
+## 🌐 Acessando a Aplicação
 
-To verify the API is working, open your browser or use a tool like Postman or `curl`:
+- API Symfony: [http://localhost:8000](http://localhost:8000)
+- Painel do API Platform: [http://localhost:8000/api](http://localhost:8000/api)
 
-```http
-GET http://localhost:8001
-GET http://localhost:8001/api
+---
+
+## 🗂️ Estrutura do Projeto
+
+```
+student-attendance-tool/
+│
+├── SAT-API/              # Symfony 6 REST API
+│   ├── config/
+│   ├── src/
+│   ├── public/
+│   ├── migrations/
+│   └── Dockerfile
+│
+├── SAT-Frontend/         # Vue.js frontend 
+│
+└── docker-compose.yml    # Orquestração Docker
 ```
 
-If successful, you’ll see a JSON response or the default API Platform landing page.
-
 ---
 
-## 🗃️ Database Setup (PostgreSQL)
+## ⚙️ Configuração do Banco de Dados
 
-> ⚠️ The PostgreSQL service will be containerized in the future. These instructions are to prepare that setup.
-
-### `.env` Database Configuration (example)
+Seu arquivo `.env` já deve conter:
 
 ```env
 DATABASE_URL="pgsql://sat_user:sat_pass@db:5432/sat_database"
 ```
 
-This means:
-
-- **User**: `sat_user`
-- **Password**: `sat_pass`
-- **Host**: `db` (container name, set in Docker Compose)
-- **Port**: `5432`
-- **Database**: `sat_database`
-
-You can change these credentials in the `.env` and later in the Docker Compose file.
+> Esses valores são definidos também no `docker-compose.yml`.
 
 ---
 
-### Database Commands (after container is up)
+## 🔧 Comandos Úteis Symfony
 
 ```bash
-# Create the database
-php bin/console doctrine:database:create
-
-# Run pending migrations
-php bin/console doctrine:migrations:migrate
+composer install                          # Instala dependências
+php bin/console doctrine:database:create  # Cria banco
+php bin/console doctrine:migrations:migrate  # Aplica migrations
+php bin/console doctrine:fixtures:load    # Carrega dados fictícios
 ```
 
 ---
 
-## 🧰 Useful Composer and Symfony Commands
+## 🌍 CORS
 
-```bash
-composer install                          # Install dependencies
-composer dump-autoload                    # Update the autoloader
-php bin/console                           # List Symfony CLI commands
-php bin/console make:entity               # Create a new Entity class
-php bin/console doctrine:migrations:diff  # Generate migration from schema
-php bin/console doctrine:migrations:migrate # Apply migrations
-```
+O backend já está configurado para aceitar requisições do frontend (localhost). Confira:
 
----
-
-## 🖼️ Frontend (Vue.js 3)
-
-> ⚠️ Not yet implemented. It will be added soon inside a folder called `SAT-Frontend/`.
-
-### Planned stack:
-
-- Vue 3 with Composition API
-- Vue Router
-- Pinia (or Vuex)
-- Axios (for calling Symfony API)
-
-Development port (planned): `http://localhost:8000`
-
-Once configured, the Vue app will send requests to the Symfony API at `http://localhost:8001`.
-
-Make sure CORS is configured to allow that in the Symfony backend (already handled via `nelmio/cors-bundle`).
-
----
-
-## 🔌 CORS Configuration
-
-The file `config/packages/nelmio_cors.yaml` includes:
+Arquivo: `config/packages/nelmio_cors.yaml`
 
 ```yaml
-nelmio_cors:
-    defaults:
-        origin_regex: true
-        allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
-        allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
-        allow_headers: ['Content-Type', 'Authorization']
-        expose_headers: ['Link']
-        max_age: 3600
-    paths:
-        '^/': null
+allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
 ```
 
-And in your `.env` file:
+No `.env`:
 
 ```env
 CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
@@ -150,60 +125,52 @@ CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
 
 ---
 
-## 🐘 PostgreSQL Volumes in Docker
+## 🧪 Testar a API
 
-> 🔒 Where is the database stored?
+```bash
+curl http://localhost:8000/api
+```
 
-When using Docker with volumes, PostgreSQL data is usually stored inside a named volume, not in your project folder.
+Você deve receber uma resposta JSON da API Platform.
 
-Example (to be configured in `docker-compose.yml`):
+---
+
+## 🖼️ Frontend (Vue.js 3)
+
+O frontend está implementado e funcional.
+
+- **Tecnologias utilizadas**:
+  - Vue 3 + Composition API
+  - Vue Router
+  - Pinia
+  - Axios
+
+A aplicação frontend estará acessível em: [http://localhost:8080](http://localhost:8080)
+
+Ela se comunica com a API Symfony disponível em: [http://localhost:8000](http://localhost:8000)
+
+Certifique-se de que ambos os containers (frontend e backend) estão em execução via Docker Compose.
+
+
+---
+
+## 🐘 Dados do PostgreSQL
+
+O volume do banco está definido no `docker-compose.yml`:
 
 ```yaml
 volumes:
   pgdata:
 ```
 
-To free up space or reset your database, run:
+Para resetar o banco:
 
 ```bash
-docker volume rm yourproject_pgdata
-```
-
-This is much cleaner than installing PostgreSQL locally.
-
----
-
-## 📦 Project Structure
-
-```
-student-attendance-tool/
-│
-├── SAT-API/              # Symfony 6 REST API (this project)
-│   ├── config/
-│   ├── src/
-│   ├── public/
-│   ├── migrations/
-│   └── Dockerfile
-│
-├── SAT-Frontend/         # Vue.js frontend (to be created)
-│
-└── docker-compose.yml    # Docker orchestration (to be added)
+docker volume rm student-attendance-tool_pgdata
 ```
 
 ---
 
-## 🛠️ What’s Next?
+## 📝 Licença
 
-- [ ] Create the `SAT-Frontend/` Vue.js application.
-- [ ] Set up `docker-compose.yml` with:
-  - Backend container (`sat-api`)
-  - Frontend container (`sat-frontend`)
-  - PostgreSQL container (`postgres`)
-- [ ] Auto-run migrations on container startup.
-- [ ] Add Makefile or `scripts/` for convenience.
-
----
-
-## 📝 License
-
-This project was developed for an internship evaluation. Not intended for production use.
+Projeto desenvolvido para fins avaliativos. Não recomendado para uso em produção.
