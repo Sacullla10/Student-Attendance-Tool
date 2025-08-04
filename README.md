@@ -37,21 +37,15 @@ docker-compose up -d --build
 > - O container do backend (Symfony API)
 > - O container do banco PostgreSQL
 
-### 3. Acesse o container do Symfony (backend)
-
-```bash
-docker exec -it sat-api-1 bash
-```
-
-### 4. Instale as dependências e configure o banco
+### 3. Instale as dependências e configure o banco
 
 Dentro do container do Symfony, execute:
 
 ```bash
-composer install
-php bin/console doctrine:database:create
-php bin/console doctrine:migrations:migrate
-php bin/console doctrine:fixtures:load
+docker-compose exec sat-api composer install
+docker-compose exec sat-api php bin/console doctrine:database:create
+docker-compose exec sat-api php bin/console doctrine:migrations:migrate
+docker-compose exec sat-api php bin/console doctrine:fixtures:load
 ```
 
 > Essas instruções vão criar o banco, aplicar as migrations e popular com dados de exemplo.
@@ -99,10 +93,10 @@ DATABASE_URL="pgsql://sat_user:sat_pass@db:5432/sat_database"
 ## 🔧 Comandos Úteis Symfony
 
 ```bash
-composer install                          # Instala dependências
-php bin/console doctrine:database:create  # Cria banco
-php bin/console doctrine:migrations:migrate  # Aplica migrations
-php bin/console doctrine:fixtures:load    # Carrega dados fictícios
+docker-compose exec sat-api composer install                          # Instala dependências
+docker-compose exec sat-api php bin/console doctrine:database:create  # Cria banco
+docker-compose exec sat-api php bin/console doctrine:migrations:migrate  # Aplica migrations
+docker-compose exec sat-api php bin/console doctrine:fixtures:load    # Carrega dados fictícios
 ```
 
 ---
