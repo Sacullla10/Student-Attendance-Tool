@@ -10,14 +10,6 @@
     <v-navigation-drawer v-model="drawer" app>
       <v-list>
         <v-list-item to="/">
-          <v-list-item-title>Home</v-list-item-title>
-        </v-list-item>
-
-        <v-list-item to="/about">
-          <v-list-item-title>Sobre</v-list-item-title>
-        </v-list-item>
-
-        <v-list-item to="/student">
           <v-list-item-title>Alunos</v-list-item-title>
         </v-list-item>
 

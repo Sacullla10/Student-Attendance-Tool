@@ -25,6 +25,33 @@ export const useClassSessionStore = defineStore('classSession', {
             }
         },
 
+        async createNewClassSession(request) {
+            try {
+                console.log('Creating a new class session')
+
+                if (!request?.date) {
+                    throw new Error('A data da aula é obrigatória.')
+                }
+
+                const formattedDate = request.date instanceof Date
+                    ? request.date.toISOString().split('T')[0]
+                    : request.date
+                
+                const response = await axios.post(`${API_URL}/class-sessions`, {
+                    session_date: formattedDate
+                })
+                return response.data
+            } catch (error) {
+                const message =
+                    error.response?.data?.message ||
+                    error.message ||
+                    'Erro ao criar nova aula.'
+
+                console.error('Erro ao criar aula:', message)
+                throw new Error(message)
+            }
+        },
+
         formatDate(selectedDate) {
             const date = new Date(selectedDate)
 

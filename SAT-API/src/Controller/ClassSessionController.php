@@ -45,19 +45,19 @@ final class ClassSessionController extends AbstractController
 
     }
 
-    #[Route('/api/class-sessions/create', name: 'create_class_session', methods: ['POST'])]
+    #[Route('/api/class-sessions', name: 'create_class_session', methods: ['POST'])]
     public function createClassSession(Request $request, EntityManagerInterface $entityManager): Response
     {
         $data = json_decode($request->getContent(), true);
 
         $classSession = new ClassSession();
-        $classSession->setSessionDate($data['session_date']);
+        $classSession->setSessionDate(new \DateTime($data['session_date']));
         $entityManager->persist($classSession);
         $entityManager->flush();
 
         return $this->json([
             'id' => $classSession->getId(),
-            'name' => $classSession->getName(),
+            'name' => $classSession->getSessionDate(),
         ], Response::HTTP_CREATED);
     }
 

@@ -1,4 +1,14 @@
 <template>
+    <new-class-session
+        :visible="showNewSessionDialog"
+        @close="showNewSessionDialog = false"
+        @new-session-created="reloadClassSessions"
+    />
+
+    <v-snackbar v-model="snackbar.show" :timeout="3000" color="success">
+        {{ snackbar.message }}
+    </v-snackbar>
+
     <span>
         <h1 class="mb-4">Lista de Aulas</h1>
         <p class="mb-4">
@@ -25,7 +35,17 @@
                         <v-col cols="5">
                             <v-card>
                                 <v-card-title>
-                                    Lista de Aulas
+                                    <v-row class="align-center justify-space-between ma-1">
+                                        Lista de Aulas
+                                        <v-btn 
+                                            color="primary"
+                                            icon="mdi-plus"
+                                            variant="outlined"
+                                            size="small"
+                                            density="compact"
+                                            @click="showNewSessionDialog = true"
+                                        />
+                                    </v-row>
                                 </v-card-title>
                                 <v-card-text>
                                     <v-table>
@@ -59,7 +79,7 @@
                                     </div>
                                 </v-card-text>
                                 <v-card-actions class="justify-end">
-                                    <v-btn color="primary" @click="showAttendanceDialog = true">
+                                    <v-btn color="primary" @click="showNewSessionDialog = true">
                                         Adicionar Aula
                                     </v-btn>
                                 </v-card-actions>
@@ -68,7 +88,9 @@
                         <v-col cols="7">
                             <v-card>
                                 <v-card-title>
-                                    Detalhes da Aula : {{ selectedSession ? classSessionStore.formatDate(selectedSession.date) : 'Nenhuma Aula Selecionada' }}
+                                    <v-row class="ma-1">
+                                        Detalhes da Aula : {{ selectedSession ? classSessionStore.formatDate(selectedSession.date) : 'Nenhuma Aula Selecionada' }}
+                                    </v-row>
                                 </v-card-title>
                                 <v-card-text>
                                     <v-table>
@@ -159,6 +181,7 @@
 import { ref, watch, onMounted } from 'vue'
 import { useClassSessionStore } from '@/stores/classSessionStore'
 import { useAttendancesStore } from '@/stores/attendancesStore'
+import newClassSession from '@/components/classSession/newClassSession.vue'
 
 const classSessionStore = useClassSessionStore()
 const attendanceStore = useAttendancesStore()
@@ -166,19 +189,11 @@ const attendanceStore = useAttendancesStore()
 const classSessions = ref([])
 const studentList = ref([])
 const selectedSession = ref(null)
-
-watch(
-  selectedSession,
-  (newVal) => {
-    console.log('Selected session changed:', newVal)
-    if (newVal && newVal?.id > 1) {
-      fetchAttendancesBySessionId(newVal.id)
-    } else {
-      console.log('Nenhuma aula selecionada válida!')
-    }
-  },
-  { deep: true }
-)
+const showNewSessionDialog = ref (false)
+const snackbar = ref({
+  show: false,
+  message: ''
+})
 
 const fetchAttendancesBySessionId = async (session_id) => {
   try {
@@ -198,8 +213,30 @@ const fetchClassSessions = async () => {
   }
 }
 
+const reloadClassSessions = async () => {
+  await fetchClassSessions()
+  showSnackbar('Aula cadastrada com sucesso!')
+}
+
+const showSnackbar = (msg) => {
+  snackbar.value.message = msg
+  snackbar.value.show = true
+}
+
 onMounted(() => {
   fetchClassSessions()
 })
 
+watch(
+  selectedSession,
+  (newVal) => {
+    console.log('Selected session changed:', newVal)
+    if (newVal && newVal?.id > 1) {
+      fetchAttendancesBySessionId(newVal.id)
+    } else {
+      console.log('Nenhuma aula selecionada válida!')
+    }
+  },
+  { deep: true }
+)
 </script>
