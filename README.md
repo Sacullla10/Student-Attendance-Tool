@@ -40,7 +40,7 @@ docker-compose up -d --build
 ### 3. Acesse o container do Symfony (backend)
 
 ```bash
-docker exec -it sat-api bash
+docker exec -it sat-api-1 bash
 ```
 
 ### 4. Instale as dependências e configure o banco
