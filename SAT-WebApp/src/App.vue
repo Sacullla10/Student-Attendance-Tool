@@ -20,6 +20,10 @@
         <v-list-item to="/student">
           <v-list-item-title>Alunos</v-list-item-title>
         </v-list-item>
+
+        <v-list-item to="/class-session">
+          <v-list-item-title>Aulas</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 

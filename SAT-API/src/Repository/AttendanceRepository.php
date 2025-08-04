@@ -16,6 +16,17 @@ class AttendanceRepository extends ServiceEntityRepository
         parent::__construct($registry, Attendance::class);
     }
 
+    // public function findAttendancesBySession(int $classSessionId): array
+    // {
+    //     return $this->createQueryBuilder('a')
+    //         ->leftJoin('a.student', 's')
+    //         ->addSelect('s')
+    //         ->andWhere('a.class_session = :sessionId')
+    //         ->setParameter('sessionId', $classSessionId)
+    //         ->getQuery()
+    //         ->getResult();
+    // }
+
     //    /**
     //     * @return Attendance[] Returns an array of Attendance objects
     //     */

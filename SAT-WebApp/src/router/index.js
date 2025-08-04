@@ -21,6 +21,11 @@ const router = createRouter({
       name: 'Alunos',
       component: () => import('../views/StudentView.vue'),
     },
+    {
+      path: '/class-session',
+      name: 'Aulas',
+      component: () => import('../views/ClassSessionView.vue'),
+    },
   ],
 })
 
