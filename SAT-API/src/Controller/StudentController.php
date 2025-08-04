@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Student;
 use App\Repository\StudentRepository;
+use App\Repository\AttendanceRepository;
 
 final class StudentController extends AbstractController
 { 
@@ -124,5 +125,24 @@ final class StudentController extends AbstractController
         }, $students);
 
         return $this->json(['attendances' => $data]);
+    }
+
+    #[OA\Tag(name: 'Student')]
+    #[Route('/api/students/{studentId}/attendance-summary', name: 'student_attendance_summary', methods: ['GET'])]
+    public function getAttendanceSummary(int $studentId, AttendanceRepository $attendanceRepository): Response
+    {
+        $summary  = $attendanceRepository->getStudentAttendanceSummary($studentId);
+
+        if (!$summary ) {
+            return $this->json(['error' => 'Student not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->json([
+            'attendance_summary' => [
+                'totalDays' => (int) $summary['totalClasses'],
+                'presentDays' => (int) $summary['totalPresent'],
+                'absentDays' => (int) $summary['totalAbsent'],
+            ]
+        ]);
     }
 }

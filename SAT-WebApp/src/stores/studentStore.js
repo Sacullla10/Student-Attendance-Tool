@@ -6,6 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL
 export const useStudentStore = defineStore('student', {
     state: () => ({
         loading: true,
+        aux_loading: false,
         error: null,
         students: [], // Array to hold student data
     }),
@@ -24,5 +25,19 @@ export const useStudentStore = defineStore('student', {
                 this.loading = false;
             }
         },
+
+        async fetchStudentAttendanceSummary(student_id) {
+            try {
+                this.aux_loading = true;
+                
+                console.log('Fetching attendance summary for student:', student_id)
+                const response = await axios.get(`${API_URL}/students/${student_id}/attendance-summary`)
+                return response.data
+            } catch (error) {
+                throw error.response?.data?.message || 'Failed to fetch student attendance summary'
+            } finally {
+                this.aux_loading = false;
+            }
+        }
     }
 })

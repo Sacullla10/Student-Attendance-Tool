@@ -16,6 +16,24 @@ class AttendanceRepository extends ServiceEntityRepository
         parent::__construct($registry, Attendance::class);
     }
 
+    public function getStudentAttendanceSummary(int $studentId): array
+    {
+        return $this->createQueryBuilder('a')
+            ->select('
+                COUNT(a.id) AS totalClasses,
+                SUM(CASE WHEN a.is_present = true THEN 1 ELSE 0 END) AS totalPresent,
+                SUM(CASE WHEN a.is_present = false THEN 1 ELSE 0 END) AS totalAbsent'
+            )
+            ->andWhere('a.student = :studentId')
+            ->setParameter('studentId', $studentId)
+            ->getQuery()
+            ->getOneOrNullResult() ?? [
+                'totalClasses' => 0,
+                'totalPresent' => 0,
+                'totalAbsent' => 0,
+            ];
+    }
+
     // public function findAttendancesBySession(int $classSessionId): array
     // {
     //     return $this->createQueryBuilder('a')
