@@ -16,6 +16,16 @@ class StudentRepository extends ServiceEntityRepository
         parent::__construct($registry, Student::class);
     }
 
+    public function findAttendancesBySession(int $classSessionId): array
+    {
+        return $this->createQueryBuilder('s')
+        ->leftJoin('s.attendances', 'a', 'WITH', 'a.class_session = :sessionId')
+        ->addSelect('a')
+        ->setParameter('sessionId', $classSessionId)
+        ->getQuery()
+        ->getResult();
+    }
+
     //    /**
     //     * @return Student[] Returns an array of Student objects
     //     */
