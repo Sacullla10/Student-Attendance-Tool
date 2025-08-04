@@ -70,10 +70,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useStudentStore } from '@/stores/studentStore'
 import StudentAttendanceSummary from '@/components/student/StudentAttendanceSummary.vue'
 
-// Create a store instance
 const studentStore = useStudentStore()
 
-// Define reactive variables
 const students = ref([])
 const selectedStudent = ref(null)
 

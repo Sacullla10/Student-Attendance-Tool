@@ -15,8 +15,8 @@ export const useStudentStore = defineStore('student', {
             try {
                 this.loading = true;
                 
-                console.log('Fetching students from:', `${API_URL}/student/list`)
-                const response = await axios.get(`${API_URL}/student/list`)
+                console.log('Fetching students from:', `${API_URL}/student`)
+                const response = await axios.get(`${API_URL}/students`)
                 return response.data
             } catch (error) {
                 throw error.response?.data?.message || 'Failed to fetch students'
