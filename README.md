@@ -139,7 +139,7 @@ O frontend está implementado e funcional.
   - Pinia
   - Axios
 
-A aplicação frontend estará acessível em: [http://localhost:8080](http://localhost:8080)
+A aplicação frontend estará acessível em: [http://localhost:5173](http://localhost:5173)
 
 Ela se comunica com a API Symfony disponível em: [http://localhost:8000](http://localhost:8000)
 
