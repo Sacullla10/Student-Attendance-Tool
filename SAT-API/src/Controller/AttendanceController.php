@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\AttendanceRepository;
@@ -28,6 +29,7 @@ final class AttendanceController extends AbstractController
         return $this->json(['attendanceList' => $data]);
     }
 
+    #[OA\Tag(name: 'Attendance')]
     #[Route('/api/class-sessions/{sessionId}/attendances', name: 'delete_attendances_session', methods: ['DELETE'])]
     public function deleteBySessionId(int $sessionId, EntityManagerInterface $em, AttendanceRepository $attendanceRepository): Response
     {
@@ -46,8 +48,36 @@ final class AttendanceController extends AbstractController
             $em->getConnection()->rollBack();
 
             return $this->json([
-                'message' => 'Erro ao remover presenças',
+                'error' => 'Erro ao remover presenças',
                 'details' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    #[OA\Tag(name: 'Attendance')]
+    #[Route('/api/attendances/bulk', name: 'bulk_session_attendances', methods: ['PUT'])]
+    public function bulkSessionAttendances(Request $request, AttendanceRepository $attendanceRepository): Response
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if(!isset($data['session_id']) || !is_array($data['attendances'] ?? null)){
+            return $this->json([
+                'error' => 'Missing or invalid session_id or attendances'
+            ], 400);
+        }
+
+        try {
+            $attendanceRepository->saveAttendacesForSession(
+                $data['session_id'],
+                $data['attendances']
+            );
+
+            return $this->json([
+                'message' => 'Attendances updated successfully'
+            ]);
+        } catch (\Throwable $th) {
+            return $this->json([
+                'error' => 'An error occurred: ' . $th->getMessage()
             ], 500);
         }
     }

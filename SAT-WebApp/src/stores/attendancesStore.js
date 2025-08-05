@@ -7,7 +7,7 @@ export const useAttendancesStore = defineStore('attendances', {
     state: () => ({
         loading: false,
         error: null,
-        attendances: [], // Array to hold student data
+        attendances: [], 
     }),
     
     actions: {
@@ -18,7 +18,7 @@ export const useAttendancesStore = defineStore('attendances', {
                 const response = await axios.get(`${API_URL}/students/by-session/${session_id}`)
                 return response.data
             } catch (error) {
-                throw error.response?.data?.message || 'Failed to fetch students'
+                throw error.response?.data?.error || 'Failed to fetch students'
             } finally {
                 this.loading = false;
             }
@@ -28,9 +28,25 @@ export const useAttendancesStore = defineStore('attendances', {
             try {
                 const response = await axios.delete(`${API_URL}/class-sessions/${sessionId}/attendances`)
                 return response.data
-                
+
             } catch (error) {
-                throw error.response?.data?.message || 'Failed to delete attendances'
+                throw error.response?.data?.error || 'Failed to delete attendances'
+            }
+        },
+
+        async saveAttendacesForSession(sessionId, attendances){
+            try {
+                this.loading = true
+                const response = await axios.put(`${API_URL}/attendances/bulk`, {
+                    session_id: sessionId,
+                    attendances: attendances,
+                })
+                return response.data
+
+            } catch (error) {
+                throw error.response?.data?.error || 'Failed to update attendances'
+            } finally {
+                this.loading = false
             }
         }
     }

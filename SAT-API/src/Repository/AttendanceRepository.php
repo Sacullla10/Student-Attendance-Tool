@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Attendance;
+use App\Entity\Student;
+use App\Entity\ClassSession;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -42,5 +44,39 @@ class AttendanceRepository extends ServiceEntityRepository
             ->setParameter('sessionId', $sessionId)
             ->getQuery()
             ->execute();
+    }
+
+    public function saveAttendacesForSession(int $sessionId, array $attendacesData): void
+    {
+        $em = $this->getEntityManager();
+        $session = $em->getRepository(ClassSession::Class)->find($sessionId);
+
+        if(!$sessionId){
+            throw new \Exception("Session not found");
+        }
+
+        foreach ($attendacesData as $attendanceData){
+            $student = $em->getRepository(Student::class)->find($attendanceData['id']);
+
+            if (!$student) {
+                continue;
+            }
+
+            $attendance = $this->findOneBy([
+                'student' => $student,
+                'class_session' => $session,
+            ]);
+
+            if(!$attendance){
+                $attendance = new Attendance();
+                $attendance->setStudent($student);
+                $attendance->setClassSession($session);
+            }
+
+            $attendance->SetIsPresent($attendanceData['is_present']);
+            $em->persist($attendance);
+        }
+
+        $em->flush();
     }
 }

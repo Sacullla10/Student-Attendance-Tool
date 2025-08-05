@@ -74,11 +74,10 @@
                                                         {{ classSessionStore.formatDate(session.date) }}
                                                     </td>
                                                     <td class="text-center" style="width: 60%;">
-                                                        <v-btn color="primary" @click="selectedSession = session; showAttendanceDialog = true">
+                                                        <v-btn color="primary" @click="selectedSession = session">
                                                             Presença
                                                         </v-btn>
                                                     </td>
-
                                                 </tr>
                                             </tbody>
                                         </v-table>
@@ -167,7 +166,7 @@
                                     <v-btn prepend-icon="mdi-trash-can" color="error" @click="showConfirmationBox = true" :disabled="studentList.length<=0">
                                         Remover Registro
                                     </v-btn>
-                                    <v-btn prepend-icon="mdi-content-save" color="success" @click="showAttendanceDialog = true" :disabled="studentList.length<=0">
+                                    <v-btn prepend-icon="mdi-content-save" color="success" @click="saveAttendenceRegister" :disabled="studentList.length<=0">
                                         Salvar Presença
                                     </v-btn>
                                 </v-card-actions>
@@ -223,6 +222,25 @@ const fetchClassSessions = async () => {
         classSessions.value = response.classSessionsList
     } catch (error) {
         console.error('Error fetching class sessions:', error)
+    }
+}
+
+const saveAttendenceRegister = async () => {
+    if (!selectedSession.value || !selectedSession.value.id) {
+        showSnackbar('Sessão inválida ou não selecionada');
+        return;
+    }
+
+    if (!Array.isArray(studentList.value) || studentList.value.length === 0) {
+        showSnackbar('A lista de alunos está vazia');
+        return;
+    }
+    
+    try {
+        const response = await attendanceStore.saveAttendacesForSession(selectedSession.value.id, studentList.value)
+        showSnackbar(response.message)
+    } catch (error) {
+        console.error('Error saving class sessions:', error)
     }
 }
 
