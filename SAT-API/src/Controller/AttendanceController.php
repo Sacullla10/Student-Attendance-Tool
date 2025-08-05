@@ -5,10 +5,12 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\AttendanceRepository;
 
 final class AttendanceController extends AbstractController
 {
+    #[OA\Tag(name: 'Attendance')]
     #[Route('/api/attendance/list', name: 'list_attendance', methods: ['GET'])]
     public function listAttendance(AttendanceRepository $attendanceRepository): Response
     {
@@ -24,6 +26,30 @@ final class AttendanceController extends AbstractController
         }, $attendanceList);
 
         return $this->json(['attendanceList' => $data]);
+    }
+
+    #[Route('/api/class-sessions/{sessionId}/attendances', name: 'delete_attendances_session', methods: ['DELETE'])]
+    public function deleteBySessionId(int $sessionId, EntityManagerInterface $em, AttendanceRepository $attendanceRepository): Response
+    {
+        $em->getConnection()->beginTransaction();
+
+        try {
+            $deleteCount = $attendanceRepository->deleteAttendancesBySessionId($sessionId);
+
+            $em->getConnection()->commit();
+
+            return $this->json([
+                'message' => 'Presenças removidas com sucesso',
+                'deleted' => $deleteCount
+            ]);
+        } catch (\Throwable $th) {
+            $em->getConnection()->rollBack();
+
+            return $this->json([
+                'message' => 'Erro ao remover presenças',
+                'details' => $th->getMessage()
+            ], 500);
+        }
     }
 
     // Create route POST /api/class-sessions/{class_session_id}/attendances

@@ -5,7 +5,13 @@
         @new-session-created="reloadClassSessions"
     />
 
-    <v-snackbar v-model="snackbar.show" :timeout="3000" color="success">
+    <confirmation-box
+        :visible="showConfirmationBox"
+        @close="showConfirmationBox = false"
+        @confirm="deleteAttendanceRegister"
+    />
+
+    <v-snackbar v-model="snackbar.show" :timeout="3000" :color="snackbar.color">
         {{ snackbar.message }}
     </v-snackbar>
 
@@ -157,8 +163,11 @@
                                             </v-row>
                                     </template>    
                                 </v-card-text>
-                                <v-card-actions class="justify-end">
-                                    <v-btn color="primary" @click="showAttendanceDialog = true">
+                                <v-card-actions class="justify-space-between">
+                                    <v-btn prepend-icon="mdi-trash-can" color="error" @click="showConfirmationBox = true" :disabled="studentList.length<=0">
+                                        Remover Registro
+                                    </v-btn>
+                                    <v-btn prepend-icon="mdi-content-save" color="success" @click="showAttendanceDialog = true" :disabled="studentList.length<=0">
                                         Salvar Presença
                                     </v-btn>
                                 </v-card-actions>
@@ -182,6 +191,7 @@ import { ref, watch, onMounted } from 'vue'
 import { useClassSessionStore } from '@/stores/classSessionStore'
 import { useAttendancesStore } from '@/stores/attendancesStore'
 import newClassSession from '@/components/classSession/newClassSession.vue'
+import ConfirmationBox from '@/components/utils/ConfirmationBox.vue'
 
 const classSessionStore = useClassSessionStore()
 const attendanceStore = useAttendancesStore()
@@ -189,54 +199,72 @@ const attendanceStore = useAttendancesStore()
 const classSessions = ref([])
 const studentList = ref([])
 const selectedSession = ref(null)
+
 const showNewSessionDialog = ref (false)
+const showConfirmationBox = ref(false)
 const snackbar = ref({
-  show: false,
-  message: ''
+    show: false,
+    message: '',
+    color: 'success'
 })
 
 const fetchAttendancesBySessionId = async (session_id) => {
-  try {
-    const response = await attendanceStore.fetchAttendancesBySessionId(session_id)
+    try {
+        const response = await attendanceStore.fetchAttendancesBySessionId(session_id)
         studentList.value = response.attendances
-  } catch (error) {
-    console.error('Error fetching students:', error)
-  }
+    } catch (error) {
+        console.error('Error fetching students:', error)
+    }
 }
 
 const fetchClassSessions = async () => {
-  try {
-    const response = await classSessionStore.fetchClassSessions()
-    classSessions.value = response.classSessionsList
-  } catch (error) {
-    console.error('Error fetching class sessions:', error)
-  }
+    try {
+        const response = await classSessionStore.fetchClassSessions()
+        classSessions.value = response.classSessionsList
+    } catch (error) {
+        console.error('Error fetching class sessions:', error)
+    }
+}
+
+const deleteAttendanceRegister = async () => {
+    console.log('BoBoo')
+    try {
+        const response = await attendanceStore.deleteAttendanceBySessionId(selectedSession.value.id)
+        console.log(response)
+
+        showSnackbar('Registro de presença deletado com sucesso!')
+        fetchAttendancesBySessionId(selectedSession.value.id)
+    } catch (error) {
+        showSnackbar(error.message ? error.message : 'Unexpected error! Check the console log', 'error')
+        console.error('Error deleting attendances:', error)
+    }
 }
 
 const reloadClassSessions = async () => {
-  await fetchClassSessions()
-  showSnackbar('Aula cadastrada com sucesso!')
+    showSnackbar('Aula cadastrada com sucesso!')
+    await fetchClassSessions()
 }
 
-const showSnackbar = (msg) => {
-  snackbar.value.message = msg
-  snackbar.value.show = true
+const showSnackbar = (msg, type) => {
+    snackbar.value.message = msg
+    snackbar.value.show = true
+    snackbar.value.color = type === 'error' ? 'error' : 'success'
 }
 
 onMounted(() => {
-  fetchClassSessions()
+    fetchClassSessions()
 })
 
 watch(
-  selectedSession,
-  (newVal) => {
-    console.log('Selected session changed:', newVal)
-    if (newVal && newVal?.id > 1) {
-      fetchAttendancesBySessionId(newVal.id)
-    } else {
-      console.log('Nenhuma aula selecionada válida!')
-    }
-  },
-  { deep: true }
+    selectedSession,
+        (newVal) => {
+        console.log('Selected session changed:', newVal)
+        if (newVal && newVal?.id > 0) {
+            fetchAttendancesBySessionId(newVal.id)
+        } else {
+            console.log('Nenhuma aula selecionada válida!')
+        }
+    },
+    { deep: true }
 )
 </script>

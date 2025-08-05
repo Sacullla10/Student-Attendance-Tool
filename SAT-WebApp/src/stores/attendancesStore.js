@@ -23,5 +23,15 @@ export const useAttendancesStore = defineStore('attendances', {
                 this.loading = false;
             }
         },
+
+        async deleteAttendanceBySessionId(sessionId){
+            try {
+                const response = await axios.delete(`${API_URL}/class-sessions/${sessionId}/attendances`)
+                return response.data
+                
+            } catch (error) {
+                throw error.response?.data?.message || 'Failed to delete attendances'
+            }
+        }
     }
 })
