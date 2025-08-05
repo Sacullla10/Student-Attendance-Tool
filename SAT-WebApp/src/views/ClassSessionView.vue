@@ -245,10 +245,8 @@ const saveAttendenceRegister = async () => {
 }
 
 const deleteAttendanceRegister = async () => {
-    console.log('BoBoo')
     try {
         const response = await attendanceStore.deleteAttendanceBySessionId(selectedSession.value.id)
-        console.log(response)
 
         showSnackbar('Registro de presença deletado com sucesso!')
         fetchAttendancesBySessionId(selectedSession.value.id)
@@ -276,11 +274,10 @@ onMounted(() => {
 watch(
     selectedSession,
         (newVal) => {
-        console.log('Selected session changed:', newVal)
         if (newVal && newVal?.id > 0) {
             fetchAttendancesBySessionId(newVal.id)
         } else {
-            console.log('Nenhuma aula selecionada válida!')
+            console.error('Nenhuma aula selecionada válida!')
         }
     },
     { deep: true }

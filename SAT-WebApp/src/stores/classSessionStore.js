@@ -14,8 +14,6 @@ export const useClassSessionStore = defineStore('classSession', {
         async fetchClassSessions() {
             try {
                 this.loading = true;
-                
-                console.log('Fetching class sessions from:', `${API_URL}/class-sessions`)
                 const response = await axios.get(`${API_URL}/class-sessions`)
                 return response.data
             } catch (error) {
@@ -27,8 +25,6 @@ export const useClassSessionStore = defineStore('classSession', {
 
         async createNewClassSession(request) {
             try {
-                console.log('Creating a new class session')
-
                 if (!request?.date) {
                     throw new Error('A data da aula é obrigatória.')
                 }

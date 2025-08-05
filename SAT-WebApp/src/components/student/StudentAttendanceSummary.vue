@@ -79,10 +79,7 @@ watch(
   (visible) => {
     if (visible && props.student?.id !== lastStudentId.value) {
       lastStudentId.value = props.student?.id
-      console.log('Modal aberto com novo aluno:', props.student)
       fetchStudentSummary(props.student.id)
-    } else {
-      console.log('Modal aberto, mas aluno não mudou — nada feito.')
     }
   }
 )

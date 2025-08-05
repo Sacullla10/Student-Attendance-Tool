@@ -53,7 +53,7 @@ const submitForm = async () => {
   const isFormValid = await formEl.validate()
 
   if (isFormValid && date.value){
-    try {
+    try {      
       await classSessionStore.createNewClassSession({
         date: new Date(date.value)
       })
@@ -64,12 +64,6 @@ const submitForm = async () => {
     } catch (error) {
       console.error('Erro ao criar aula:', error)
     }
-  }
-
-
-  if (form.value.validate()) {
-    console.log('Data enviada:', date.value)
-    // Aqui você pode chamar o backend com fetch/axios ou store (ex: store.createSession(date.value))
   }
 }
 

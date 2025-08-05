@@ -16,7 +16,6 @@ export const useStudentStore = defineStore('student', {
             try {
                 this.loading = true;
                 
-                console.log('Fetching students from:', `${API_URL}/student`)
                 const response = await axios.get(`${API_URL}/students`)
                 return response.data
             } catch (error) {
@@ -30,7 +29,6 @@ export const useStudentStore = defineStore('student', {
             try {
                 this.aux_loading = true;
                 
-                console.log('Fetching attendance summary for student:', student_id)
                 const response = await axios.get(`${API_URL}/students/${student_id}/attendance-summary`)
                 return response.data
             } catch (error) {

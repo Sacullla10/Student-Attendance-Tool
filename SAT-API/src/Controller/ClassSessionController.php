@@ -13,7 +13,34 @@ use App\Repository\ClassSessionRepository;
 
 final class ClassSessionController extends AbstractController
 {
-    
+    #[OA\Get(
+        path: '/api/class-sessions',
+        summary: 'Lista todas as sessões de aula',
+        tags: ['ClassSessions'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Lista de sessões retornada com sucesso',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(
+                            property: 'classSessionsList',
+                            type: 'array',
+                            items: new OA\Items(
+                                type: 'object',
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer'),
+                                    new OA\Property(property: 'date', type: 'string', format: 'date')
+                                ]
+                            )
+                        )
+                    ]
+                )
+            )
+        ]
+    )]
+    #[OA\Tag(name: 'ClassSessions')]
     #[Route('/api/class-sessions', name: 'list_class_sessions', methods: ['GET'])]
     public function listClassSessions(EntityManagerInterface $entityManager): Response
     {        
@@ -29,22 +56,36 @@ final class ClassSessionController extends AbstractController
         return $this->json(['classSessionsList' => $data]);
     }
 
-    #[Route('/api/class-sessions/{id}', name: 'get_class_session', methods: ['GET'])]
-    public function getClassSession(int $id, EntityManagerInterface $entityManager): Response
-    {
-        $classSession = $entityManager->getRepository(ClassSession::class)->find($id);
-
-        if (!$classSession) {
-            return $this->json(['error' => 'Class session not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        return $this->json([
-            'id' => $classSession->getId(),
-            'name' => $classSession->getName(),
-        ]);
-
-    }
-
+    #[OA\Post(
+        path: '/api/class-sessions',
+        summary: 'Cria uma nova sessão de aula',
+        tags: ['ClassSessions'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'object',
+                required: ['session_date'],
+                properties: [
+                    new OA\Property(property: 'session_date', type: 'string', format: 'date', example: '2025-08-05')
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Sessão criada com sucesso',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'id', type: 'integer'),
+                        new OA\Property(property: 'name', type: 'string', format: 'date')
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: 'Dados inválidos')
+        ]
+    )]
+    #[OA\Tag(name: 'ClassSessions')]
     #[Route('/api/class-sessions', name: 'create_class_session', methods: ['POST'])]
     public function createClassSession(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -57,42 +98,7 @@ final class ClassSessionController extends AbstractController
 
         return $this->json([
             'id' => $classSession->getId(),
-            'name' => $classSession->getSessionDate(),
+            'date' => $classSession->getSessionDate(),
         ], Response::HTTP_CREATED);
-    }
-
-    #[Route('/api/class-sessions/{id}', name: 'update_class_session', methods: ['PUT'])]
-    public function updateClassSession(int $id, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $classSession = $entityManager->getRepository(ClassSession::class)->find($id);
-
-        if (!$classSession) {
-            return $this->json(['error' => 'Class session not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $data = json_decode($request->getContent(), true);
-        if (isset($data['session_date'])) {
-            $classSession->setSessionDate(new \DateTime($data['session_date']));
-        }
-
-        $entityManager->persist($classSession);
-        $entityManager->flush();
-
-        return $this->json(['message' => 'Class session updated successfully']);
-    }
-
-    #[Route('/api/class-sessions/{id}', name: 'delete_class_session', methods: ['DELETE'])]
-    public function deleteClassSession(int $id, EntityManagerInterface $entityManager): Response   
-    {
-        $classSession = $entityManager->getRepository(ClassSession::class)->find($id);
-
-        if (!$classSession) {
-            return $this->json(['error' => 'Class session not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $entityManager->remove($classSession);
-        $entityManager->flush();
-        
-        return $this->json(['message' => 'Class session deleted successfully']);
     }
 }
